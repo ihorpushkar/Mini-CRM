@@ -1,41 +1,51 @@
-import { Link } from 'react-router-dom'
+export type DashboardTab = 'users' | 'clients' | 'tasks'
 
-export default function Sidebar() {
+interface SidebarProps {
+  activeTab: DashboardTab
+  onTabChange: (tab: DashboardTab) => void
+  isAdmin: boolean
+}
+
+export default function Sidebar({ activeTab, onTabChange, isAdmin }: SidebarProps) {
+  const tabClass = (tab: DashboardTab) =>
+    `block w-full text-left px-4 py-2 rounded-md transition-colors ${
+      activeTab === tab
+        ? 'bg-blue-600 text-white'
+        : 'text-white hover:bg-gray-700'
+    }`
+
   return (
     <aside className="w-64 bg-gray-800 min-h-screen">
       <nav className="p-4">
         <ul className="space-y-2">
+          {isAdmin && (
+            <li>
+              <button
+                type="button"
+                onClick={() => onTabChange('users')}
+                className={tabClass('users')}
+              >
+                Users
+              </button>
+            </li>
+          )}
           <li>
-            <Link
-              to="/"
-              className="block px-4 py-2 text-white rounded-md hover:bg-gray-700 transition-colors"
-            >
-              Dashboard
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/users"
-              className="block px-4 py-2 text-white rounded-md hover:bg-gray-700 transition-colors"
-            >
-              Users
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/clients"
-              className="block px-4 py-2 text-white rounded-md hover:bg-gray-700 transition-colors"
+            <button
+              type="button"
+              onClick={() => onTabChange('clients')}
+              className={tabClass('clients')}
             >
               Clients
-            </Link>
+            </button>
           </li>
           <li>
-            <Link
-              to="/tasks"
-              className="block px-4 py-2 text-white rounded-md hover:bg-gray-700 transition-colors"
+            <button
+              type="button"
+              onClick={() => onTabChange('tasks')}
+              className={tabClass('tasks')}
             >
               Tasks
-            </Link>
+            </button>
           </li>
         </ul>
       </nav>
