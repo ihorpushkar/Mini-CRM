@@ -19,9 +19,9 @@ export default function DashboardPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen w-full">
       <Header onMenuToggle={() => setMobileMenuOpen((open) => !open)} />
-      <div className="flex flex-1 gap-4 md:gap-6 relative">
+      <div className="flex flex-1 w-full md:gap-6">
         <Sidebar
           activeTab={activeTab}
           onTabChange={setActiveTab}
@@ -29,7 +29,7 @@ export default function DashboardPage() {
           isOpen={mobileMenuOpen}
           onClose={() => setMobileMenuOpen(false)}
         />
-        <main className="flex-1 px-4 md:px-6 py-4 md:py-6 bg-gray-100 min-w-0">
+        <main className="flex-1 min-w-0 px-4 md:px-6 lg:px-8 py-4 md:py-6 bg-gray-100">
           <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">{TAB_LABELS[activeTab]}</h2>
 
           <div className="mb-4 flex gap-2 border-b border-gray-200 md:hidden overflow-x-auto">
@@ -71,7 +71,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            <div className="md:col-span-2 lg:col-span-3 bg-white p-4 md:p-6 rounded-lg shadow-md">
+            <div className="col-span-1 md:col-span-2 lg:col-span-3 bg-white p-4 md:p-6 rounded-lg shadow-md">
               {activeTab === 'users' && isAdmin && <UserList />}
               {activeTab === 'clients' && <ClientList />}
               {activeTab === 'tasks' && <TaskList />}

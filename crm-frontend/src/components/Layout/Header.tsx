@@ -17,8 +17,8 @@ export default function Header({ onMenuToggle }: HeaderProps) {
   }
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-30">
-      <div className="flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
+    <header className="w-full bg-white shadow-sm border-b border-gray-200 sticky top-0 z-30">
+      <div className="flex w-full items-center justify-between px-4 md:px-6 lg:px-8 py-3 md:py-4">
         <div className="flex items-center gap-3">
           <button
             type="button"

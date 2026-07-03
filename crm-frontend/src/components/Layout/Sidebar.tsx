@@ -32,9 +32,11 @@ export default function Sidebar({ activeTab, onTabChange, isAdmin, isOpen, onClo
         />
       )}
       <aside
-        className={`w-64 bg-gray-800 min-h-screen z-50 top-0 left-0 absolute md:fixed transition-transform duration-200 ease-in-out ${
-          isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
-        } ${isOpen ? 'block' : 'hidden md:block'}`}
+        className={`w-64 shrink-0 bg-gray-800 z-50 transition-transform duration-200 ease-in-out
+          fixed top-0 left-0 h-full
+          md:static md:h-auto md:min-h-full md:translate-x-0 md:z-auto
+          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+          ${isOpen ? 'block' : 'hidden md:block'}`}
       >
         <div className="flex items-center justify-between p-4 md:hidden border-b border-gray-700">
           <span className="text-white font-semibold text-sm">Menu</span>
