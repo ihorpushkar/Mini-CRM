@@ -145,21 +145,38 @@ git push origin main
 
 ### Backend (Railway)
 
+**Project:** `pleasing-flexibility` → service `Mini-CRM`  
+**Database:** `balanced-dedication` → service `Postgres`
+
 ```bash
 # 1. Push to GitHub
-# 2. Create Railway project
-# 3. Add env vars:
-#    - DATABASE_URL (from Neon)
-#    - JWT_SECRET (32+ chars)
-#    - CORS_ORIGIN (your deployed URL)
-# 4. Deploy
+git push origin main
+
+# 2. Railway service settings
+#    Root Directory: backend
+#    (or use railway.json at repo root)
+
+# 3. Required env vars on Mini-CRM service:
+#    DATABASE_URL = postgresql://... (from Postgres DATABASE_PUBLIC_URL)
+#    ⚠️  NO angle brackets! Wrong: <postgresql://...>  Right: postgresql://...
+#    JWT_SECRET = random 32+ chars
+#    CORS_ORIGIN = https://your-frontend.vercel.app
+#    NODE_ENV = production
+
+# 4. Link Postgres → copy DATABASE_PUBLIC_URL to Mini-CRM DATABASE_URL
+#    (if DB and API are in different Railway projects)
+
+# 5. Deploy from repo root:
+cd /path/to/mini-CRM
+railway link --project pleasing-flexibility --service Mini-CRM
+railway up
 ```
 
-### Database (Neon)
+### Database (Railway Postgres)
 
-- Create free PostgreSQL: https://neon.tech
-- Copy DATABASE_URL
-- Set in Railway
+- Postgres service in project `balanced-dedication`
+- For local `db push` / `seed`: use `DATABASE_PUBLIC_URL` temporarily in `backend/.env`
+- For production runtime: `DATABASE_URL` on Mini-CRM must start with `postgresql://`
 
 ## API Endpoints
 
@@ -312,6 +329,17 @@ kill -9 PID
 
 - Verify JWT_SECRET in .env
 - Clear localStorage in browser DevTools
+
+**Railway P1012: URL must start with postgresql://**
+
+- `DATABASE_URL` has invalid format (often wrapped in `<>` angle brackets)
+- Set plain URL: `postgresql://user:pass@host:port/db` — no `<` or `>`
+- Redeploy after fixing variables
+
+**Railway build: backend directory does not exist**
+
+- Set Root Directory to `backend` in Railway service settings
+- Or deploy from monorepo root (not from `backend/` folder)
 
 ## Contributing
 

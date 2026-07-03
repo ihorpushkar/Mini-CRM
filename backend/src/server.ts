@@ -28,10 +28,9 @@ app.use(errorHandler);
 
 async function startServer(): Promise<void> {
   await connectDatabase();
-  app.listen(env.port, () => {
-    if (!env.isProduction) {
-      console.log(`Server on ${env.port}`);
-    }
+
+  app.listen(env.port, '0.0.0.0', () => {
+    console.log(`Server listening on port ${env.port}`);
   });
 }
 
