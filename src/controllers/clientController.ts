@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import prisma from '../config/database';
-import { AuthRequest, NotFoundError, ForbiddenError } from '../types';
+import { AuthRequest, NotFoundError, ForbiddenError, ValidationError } from '../types';
 import { validateBody, clientSchema, clientUpdateSchema, ClientCreateInput, ClientUpdateInput } from '../utils/validation';
 
 function getParamId(req: AuthRequest): string {
@@ -137,6 +137,14 @@ export async function deleteClient(req: AuthRequest, res: Response): Promise<voi
 
   if (existingClient.createdBy !== req.userId && user.role !== 'admin') {
     throw new ForbiddenError();
+  }
+
+  const tasksCount = await prisma.task.count({
+    where: { clientId: id },
+  });
+
+  if (tasksCount > 0) {
+    throw new ValidationError('Cannot delete client with active tasks');
   }
 
   await prisma.client.delete({
