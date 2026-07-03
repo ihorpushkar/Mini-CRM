@@ -53,10 +53,27 @@ export const taskUpdateSchema = z
     message: 'At least one field must be provided',
   });
 
+export const taskQuerySchema = z.object({
+  status: z.enum(['pending', 'completed']).optional(),
+  assignedTo: z.string().min(1).optional(),
+});
+
+export const paramIdSchema = z.string().min(1, 'Invalid ID');
+
 export type ClientCreateInput = z.infer<typeof clientSchema>;
 export type ClientUpdateInput = z.infer<typeof clientUpdateSchema>;
 export type TaskCreateInput = z.infer<typeof taskSchema>;
 export type TaskUpdateInput = z.infer<typeof taskUpdateSchema>;
+
+export function validateQuery<T>(schema: z.ZodSchema<T>, query: unknown): T {
+  const parsed = schema.safeParse(query);
+
+  if (!parsed.success) {
+    throw new ValidationError(parsed.error.issues[0]?.message ?? 'Validation failed');
+  }
+
+  return parsed.data;
+}
 
 export function validateBody<T>(schema: z.ZodSchema<T>, body: unknown): T {
   const parsed = schema.safeParse(body);

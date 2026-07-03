@@ -4,6 +4,7 @@ import { taskUpdateSchema, type TaskUpdateInput } from '../../schemas'
 import type { Task } from '../../types'
 import { getErrorMessage } from '../../utils/errors'
 import { showError } from '../../utils/toast'
+import { formClass, labelClass, inputClass } from '../../utils/formStyles'
 
 interface TaskEditFormProps {
   task: Task
@@ -43,18 +44,18 @@ export default function TaskEditForm({ task, onSuccess, onCancel }: TaskEditForm
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className={formClass}>
       <div>
-        <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-        <input type="text" id="title" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required disabled={loading} />
+        <label htmlFor="title" className={labelClass}>Title</label>
+        <input type="text" id="title" value={title} onChange={(e) => setTitle(e.target.value)} className={inputClass} required disabled={loading} />
       </div>
       <div>
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-        <textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" disabled={loading} />
+        <label htmlFor="description" className={labelClass}>Description</label>
+        <textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} rows={3} className={inputClass} disabled={loading} />
       </div>
       <div>
-        <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-        <select id="status" value={status} onChange={(e) => setStatus(e.target.value as 'pending' | 'completed')} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" disabled={loading}>
+        <label htmlFor="status" className={labelClass}>Status</label>
+        <select id="status" value={status} onChange={(e) => setStatus(e.target.value as 'pending' | 'completed')} className={inputClass} disabled={loading}>
           <option value="pending">Pending</option>
           <option value="completed">Completed</option>
         </select>

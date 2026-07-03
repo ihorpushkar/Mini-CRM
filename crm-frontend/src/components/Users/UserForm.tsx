@@ -4,6 +4,7 @@ import { userUpdateSchema, type UserUpdateInput } from '../../schemas'
 import type { User } from '../../types'
 import { getErrorMessage } from '../../utils/errors'
 import { showError } from '../../utils/toast'
+import { formClass, labelClass, inputClass } from '../../utils/formStyles'
 
 interface UserFormProps {
   user?: User
@@ -45,21 +46,21 @@ export default function UserForm({ user, onSuccess, onCancel }: UserFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className={formClass}>
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+        <label htmlFor="email" className={labelClass}>Email</label>
         <input
           type="email"
           id="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={inputClass}
           required
           disabled={loading}
         />
       </div>
       <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="password" className={labelClass}>
           Password (leave blank to keep current)
         </label>
         <input
@@ -67,17 +68,17 @@ export default function UserForm({ user, onSuccess, onCancel }: UserFormProps) {
           id="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={inputClass}
           disabled={loading}
         />
       </div>
       <div>
-        <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+        <label htmlFor="role" className={labelClass}>Role</label>
         <select
           id="role"
           value={role}
           onChange={(e) => setRole(e.target.value as 'admin' | 'user')}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={inputClass}
           disabled={loading}
         >
           <option value="user">User</option>

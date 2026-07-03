@@ -4,13 +4,14 @@ import { authAPI } from '../../api/auth'
 import { useAuthStore } from '../../store/authStore'
 import { getErrorMessage } from '../../utils/errors'
 import { showError, showSuccess } from '../../utils/toast'
+import { formClass, labelClass, inputClass } from '../../utils/formStyles'
 
 export default function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
-  const setToken = useAuthStore((state) => state.setToken)
+  const setTokens = useAuthStore((state) => state.setTokens)
   const setUser = useAuthStore((state) => state.setUser)
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -30,8 +31,11 @@ export default function LoginForm() {
 
     try {
       const response = await authAPI.login(email, password)
-      const { token } = response.data.data
-      setToken(token)
+      if (response.status !== 200) {
+        throw new Error('Login failed')
+      }
+      const { token, refreshToken } = response.data.data
+      setTokens(token, refreshToken)
       const user = await authAPI.getMe()
       setUser(user)
       showSuccess('Welcome back!')
@@ -44,9 +48,9 @@ export default function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className={formClass}>
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="email" className={labelClass}>
           Email
         </label>
         <input
@@ -54,13 +58,13 @@ export default function LoginForm() {
           id="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={inputClass}
           required
           disabled={loading}
         />
       </div>
       <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="password" className={labelClass}>
           Password
         </label>
         <input
@@ -68,7 +72,7 @@ export default function LoginForm() {
           id="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={inputClass}
           required
           disabled={loading}
         />

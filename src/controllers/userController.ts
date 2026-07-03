@@ -1,7 +1,7 @@
 import { Response } from 'express';
 import prisma from '../config/database';
 import { hashPassword } from '../utils/password';
-import { validateBody, userUpdateSchema } from '../utils/validation';
+import { validateBody, userUpdateSchema, paramIdSchema } from '../utils/validation';
 import {
   AuthRequest,
   ForbiddenError,
@@ -12,11 +12,11 @@ import {
 } from '../types';
 
 function getParamId(req: AuthRequest): string {
-  const id = req.params.id;
-  if (typeof id !== 'string') {
+  const parsed = paramIdSchema.safeParse(req.params.id);
+  if (!parsed.success) {
     throw new UserNotFoundError();
   }
-  return id;
+  return parsed.data;
 }
 
 async function getCurrentUser(req: AuthRequest) {

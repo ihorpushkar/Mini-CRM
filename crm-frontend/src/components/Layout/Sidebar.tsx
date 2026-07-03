@@ -4,9 +4,11 @@ interface SidebarProps {
   activeTab: DashboardTab
   onTabChange: (tab: DashboardTab) => void
   isAdmin: boolean
+  isOpen: boolean
+  onClose: () => void
 }
 
-export default function Sidebar({ activeTab, onTabChange, isAdmin }: SidebarProps) {
+export default function Sidebar({ activeTab, onTabChange, isAdmin, isOpen, onClose }: SidebarProps) {
   const tabClass = (tab: DashboardTab) =>
     `block w-full text-left px-4 py-2 rounded-md transition-colors ${
       activeTab === tab
@@ -14,41 +16,73 @@ export default function Sidebar({ activeTab, onTabChange, isAdmin }: SidebarProp
         : 'text-white hover:bg-gray-700'
     }`
 
+  const handleTabChange = (tab: DashboardTab) => {
+    onTabChange(tab)
+    onClose()
+  }
+
   return (
-    <aside className="w-64 bg-gray-800 min-h-screen">
-      <nav className="p-4">
-        <ul className="space-y-2">
-          {isAdmin && (
+    <>
+      {isOpen && (
+        <button
+          type="button"
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={onClose}
+          aria-label="Close menu"
+        />
+      )}
+      <aside
+        className={`w-64 bg-gray-800 min-h-screen z-50 top-0 left-0 absolute md:fixed transition-transform duration-200 ease-in-out ${
+          isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+        } ${isOpen ? 'block' : 'hidden md:block'}`}
+      >
+        <div className="flex items-center justify-between p-4 md:hidden border-b border-gray-700">
+          <span className="text-white font-semibold text-sm">Menu</span>
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-gray-300 hover:text-white p-1"
+            aria-label="Close menu"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <nav className="p-4">
+          <ul className="space-y-2">
+            {isAdmin && (
+              <li>
+                <button
+                  type="button"
+                  onClick={() => handleTabChange('users')}
+                  className={tabClass('users')}
+                >
+                  Users
+                </button>
+              </li>
+            )}
             <li>
               <button
                 type="button"
-                onClick={() => onTabChange('users')}
-                className={tabClass('users')}
+                onClick={() => handleTabChange('clients')}
+                className={tabClass('clients')}
               >
-                Users
+                Clients
               </button>
             </li>
-          )}
-          <li>
-            <button
-              type="button"
-              onClick={() => onTabChange('clients')}
-              className={tabClass('clients')}
-            >
-              Clients
-            </button>
-          </li>
-          <li>
-            <button
-              type="button"
-              onClick={() => onTabChange('tasks')}
-              className={tabClass('tasks')}
-            >
-              Tasks
-            </button>
-          </li>
-        </ul>
-      </nav>
-    </aside>
+            <li>
+              <button
+                type="button"
+                onClick={() => handleTabChange('tasks')}
+                className={tabClass('tasks')}
+              >
+                Tasks
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+    </>
   )
 }

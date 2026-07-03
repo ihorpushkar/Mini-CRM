@@ -1,14 +1,14 @@
 import { Response } from 'express';
 import prisma from '../config/database';
 import { AuthRequest, NotFoundError, ForbiddenError, ValidationError } from '../types';
-import { validateBody, clientSchema, clientUpdateSchema, ClientCreateInput, ClientUpdateInput } from '../utils/validation';
+import { validateBody, clientSchema, clientUpdateSchema, paramIdSchema, ClientCreateInput, ClientUpdateInput } from '../utils/validation';
 
 function getParamId(req: AuthRequest): string {
-  const id = req.params.id;
-  if (typeof id !== 'string') {
+  const parsed = paramIdSchema.safeParse(req.params.id);
+  if (!parsed.success) {
     throw new NotFoundError('Client not found');
   }
-  return id;
+  return parsed.data;
 }
 
 export async function createClient(req: AuthRequest, res: Response): Promise<void> {

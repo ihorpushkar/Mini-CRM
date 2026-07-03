@@ -1,7 +1,7 @@
 import { Response } from 'express';
 import { z } from 'zod';
 import prisma from '../config/database';
-import { generateToken } from '../utils/jwt';
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwt';
 import { hashPassword, comparePassword } from '../utils/password';
 import { AuthRequest, ConflictError, UserNotFoundError, UnauthorizedError, ValidationError, userSelect } from '../types';
 
@@ -14,6 +14,17 @@ const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(1, 'Password is required'),
 });
+
+const refreshSchema = z.object({
+  refreshToken: z.string().min(1, 'Refresh token is required'),
+});
+
+function issueTokens(userId: string) {
+  return {
+    token: generateAccessToken(userId),
+    refreshToken: generateRefreshToken(userId),
+  };
+}
 
 export async function register(req: AuthRequest, res: Response): Promise<void> {
   const parsed = registerSchema.safeParse(req.body);
@@ -37,11 +48,11 @@ export async function register(req: AuthRequest, res: Response): Promise<void> {
     select: userSelect,
   });
 
-  const token = generateToken(user.id);
+  const tokens = issueTokens(user.id);
 
   res.status(201).json({
     success: true,
-    data: { user, token },
+    data: { user, ...tokens },
   });
 }
 
@@ -69,7 +80,7 @@ export async function login(req: AuthRequest, res: Response): Promise<void> {
     throw new UnauthorizedError('Invalid credentials');
   }
 
-  const token = generateToken(user.id);
+  const tokens = issueTokens(user.id);
 
   const safeUser = await prisma.user.findUnique({
     where: { id: user.id },
@@ -78,8 +89,36 @@ export async function login(req: AuthRequest, res: Response): Promise<void> {
 
   res.json({
     success: true,
-    data: { user: safeUser, token },
+    data: { user: safeUser, ...tokens },
   });
+}
+
+export async function refreshToken(req: AuthRequest, res: Response): Promise<void> {
+  const parsed = refreshSchema.safeParse(req.body);
+
+  if (!parsed.success) {
+    throw new ValidationError(parsed.error.issues[0]?.message ?? 'Invalid input');
+  }
+
+  try {
+    const { userId } = verifyRefreshToken(parsed.data.refreshToken);
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: userSelect,
+    });
+
+    if (!user) {
+      throw new UnauthorizedError('Invalid refresh token');
+    }
+
+    res.json({
+      success: true,
+      data: issueTokens(userId),
+    });
+  } catch {
+    throw new UnauthorizedError('Invalid or expired refresh token');
+  }
 }
 
 export async function getProfile(req: AuthRequest, res: Response): Promise<void> {

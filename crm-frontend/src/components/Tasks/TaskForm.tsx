@@ -5,6 +5,7 @@ import { taskSchema, taskUpdateSchema, type TaskInput, type TaskUpdateInput } fr
 import type { Task, Client } from '../../types'
 import { getErrorMessage } from '../../utils/errors'
 import { showError } from '../../utils/toast'
+import { formClass, labelClass, inputClass } from '../../utils/formStyles'
 
 interface TaskFormProps {
   task?: Task
@@ -75,9 +76,9 @@ export default function TaskForm({ task, onSuccess, onCancel }: TaskFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className={formClass}>
       <div>
-        <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="title" className={labelClass}>
           Title
         </label>
         <input
@@ -85,12 +86,12 @@ export default function TaskForm({ task, onSuccess, onCancel }: TaskFormProps) {
           id="title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={inputClass}
           required
         />
       </div>
       <div>
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="description" className={labelClass}>
           Description (optional)
         </label>
         <textarea
@@ -98,18 +99,18 @@ export default function TaskForm({ task, onSuccess, onCancel }: TaskFormProps) {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={inputClass}
         />
       </div>
       <div>
-        <label htmlFor="clientId" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="clientId" className={labelClass}>
           Client
         </label>
         <select
           id="clientId"
           value={clientId}
           onChange={(e) => setClientId(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={inputClass}
           required
           disabled={loadingClients}
         >
@@ -122,14 +123,14 @@ export default function TaskForm({ task, onSuccess, onCancel }: TaskFormProps) {
         </select>
       </div>
       <div>
-        <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="status" className={labelClass}>
           Status
         </label>
         <select
           id="status"
           value={status}
           onChange={(e) => setStatus(e.target.value as 'pending' | 'completed')}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={inputClass}
         >
           <option value="pending">Pending</option>
           <option value="completed">Completed</option>

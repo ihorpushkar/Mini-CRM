@@ -9,3 +9,5 @@ dist/
 prisma/dev.db
 prisma/dev.db-journal
 crm-frontend/dist/
+crm-frontend/.env
+crm-frontend/.env.local

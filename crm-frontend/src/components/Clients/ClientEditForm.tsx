@@ -4,6 +4,7 @@ import { clientUpdateSchema, type ClientUpdateInput } from '../../schemas'
 import type { Client } from '../../types'
 import { getErrorMessage } from '../../utils/errors'
 import { showError } from '../../utils/toast'
+import { formClass, labelClass, inputClass } from '../../utils/formStyles'
 
 interface ClientEditFormProps {
   client: Client
@@ -43,18 +44,18 @@ export default function ClientEditForm({ client, onSuccess, onCancel }: ClientEd
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className={formClass}>
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-        <input type="text" id="name" value={name} onChange={(e) => setName(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required disabled={loading} />
+        <label htmlFor="name" className={labelClass}>Name</label>
+        <input type="text" id="name" value={name} onChange={(e) => setName(e.target.value)} className={inputClass} required disabled={loading} />
       </div>
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-        <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required disabled={loading} />
+        <label htmlFor="email" className={labelClass}>Email</label>
+        <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputClass} required disabled={loading} />
       </div>
       <div>
-        <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Phone (optional)</label>
-        <input type="text" id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" disabled={loading} />
+        <label htmlFor="phone" className={labelClass}>Phone (optional)</label>
+        <input type="text" id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} className={inputClass} disabled={loading} />
       </div>
       <div className="flex space-x-3">
         <button type="button" onClick={onCancel} disabled={loading} className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400 disabled:opacity-50">Cancel</button>

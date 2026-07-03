@@ -4,6 +4,7 @@ import { authAPI } from '../../api/auth'
 import { useAuthStore } from '../../store/authStore'
 import { getErrorMessage } from '../../utils/errors'
 import { showError, showSuccess } from '../../utils/toast'
+import { formClass, labelClass, inputClass } from '../../utils/formStyles'
 
 export default function RegisterForm() {
   const [email, setEmail] = useState('')
@@ -11,7 +12,7 @@ export default function RegisterForm() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
-  const setToken = useAuthStore((state) => state.setToken)
+  const setTokens = useAuthStore((state) => state.setTokens)
   const setUser = useAuthStore((state) => state.setUser)
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,8 +37,11 @@ export default function RegisterForm() {
 
     try {
       const response = await authAPI.register(email, password)
-      const { token } = response.data.data
-      setToken(token)
+      if (response.status !== 201 && response.status !== 200) {
+        throw new Error('Registration failed')
+      }
+      const { token, refreshToken } = response.data.data
+      setTokens(token, refreshToken)
       const user = await authAPI.getMe()
       setUser(user)
       showSuccess('Account created successfully!')
@@ -50,9 +54,9 @@ export default function RegisterForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className={formClass}>
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="email" className={labelClass}>
           Email
         </label>
         <input
@@ -60,13 +64,13 @@ export default function RegisterForm() {
           id="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={inputClass}
           required
           disabled={loading}
         />
       </div>
       <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="password" className={labelClass}>
           Password
         </label>
         <input
@@ -74,13 +78,13 @@ export default function RegisterForm() {
           id="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={inputClass}
           required
           disabled={loading}
         />
       </div>
       <div>
-        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="confirmPassword" className={labelClass}>
           Confirm Password
         </label>
         <input
@@ -88,7 +92,7 @@ export default function RegisterForm() {
           id="confirmPassword"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={inputClass}
           required
           disabled={loading}
         />

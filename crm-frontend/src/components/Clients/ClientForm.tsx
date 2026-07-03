@@ -4,6 +4,7 @@ import { clientSchema, clientUpdateSchema, type ClientInput, type ClientUpdateIn
 import type { Client } from '../../types'
 import { getErrorMessage } from '../../utils/errors'
 import { showError } from '../../utils/toast'
+import { formClass, labelClass, inputClass } from '../../utils/formStyles'
 
 interface ClientFormProps {
   client?: Client
@@ -55,9 +56,9 @@ export default function ClientForm({ client, onSuccess, onCancel }: ClientFormPr
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className={formClass}>
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="name" className={labelClass}>
           Name
         </label>
         <input
@@ -65,12 +66,12 @@ export default function ClientForm({ client, onSuccess, onCancel }: ClientFormPr
           id="name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={inputClass}
           required
         />
       </div>
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="email" className={labelClass}>
           Email
         </label>
         <input
@@ -78,12 +79,12 @@ export default function ClientForm({ client, onSuccess, onCancel }: ClientFormPr
           id="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={inputClass}
           required
         />
       </div>
       <div>
-        <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="phone" className={labelClass}>
           Phone (optional)
         </label>
         <input
@@ -91,7 +92,7 @@ export default function ClientForm({ client, onSuccess, onCancel }: ClientFormPr
           id="phone"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={inputClass}
         />
       </div>
       {error && (

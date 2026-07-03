@@ -3,22 +3,26 @@ import type { User } from '../types'
 
 type AuthStore = {
   token: string | null
+  refreshToken: string | null
   user: User | null
-  setToken: (token: string) => void
+  setTokens: (token: string, refreshToken: string) => void
   setUser: (user: User) => void
   logout: () => void
 }
 
 export const useAuthStore = create<AuthStore>((set) => ({
   token: localStorage.getItem('token'),
+  refreshToken: localStorage.getItem('refreshToken'),
   user: null,
-  setToken: (token) => {
+  setTokens: (token, refreshToken) => {
     localStorage.setItem('token', token)
-    set({ token })
+    localStorage.setItem('refreshToken', refreshToken)
+    set({ token, refreshToken })
   },
   setUser: (user) => set({ user }),
   logout: () => {
     localStorage.removeItem('token')
-    set({ token: null, user: null })
+    localStorage.removeItem('refreshToken')
+    set({ token: null, refreshToken: null, user: null })
   },
 }))

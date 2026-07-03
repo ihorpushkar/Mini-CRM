@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
+import { Prisma } from '@prisma/client';
 import { AppError } from '../utils/errors';
+import { env } from '../config/env';
 
 function sendError(res: Response, statusCode: number, error: string): void {
   res.status(statusCode).json({ success: false, error, message: error });
@@ -16,11 +18,15 @@ export function errorHandler(
     return;
   }
 
+  if (err instanceof Prisma.PrismaClientKnownRequestError) {
+    console.error('Database error:', { code: err.code, meta: err.meta });
+    sendError(res, 500, env.isProduction ? 'Internal server error' : 'Database operation failed');
+    return;
+  }
+
   console.error('Unhandled error:', err);
 
-  const error = process.env.NODE_ENV === 'production'
-    ? 'Internal server error'
-    : err.message;
+  const error = env.isProduction ? 'Internal server error' : err.message;
 
   sendError(res, 500, error);
 }

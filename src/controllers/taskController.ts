@@ -1,14 +1,14 @@
 import { Response } from 'express';
 import prisma from '../config/database';
 import { AuthRequest, NotFoundError, ForbiddenError } from '../types';
-import { validateBody, taskSchema, taskUpdateSchema, TaskCreateInput, TaskUpdateInput } from '../utils/validation';
+import { validateBody, validateQuery, taskSchema, taskUpdateSchema, taskQuerySchema, paramIdSchema, TaskCreateInput, TaskUpdateInput } from '../utils/validation';
 
 function getParamId(req: AuthRequest): string {
-  const id = req.params.id;
-  if (typeof id !== 'string') {
+  const parsed = paramIdSchema.safeParse(req.params.id);
+  if (!parsed.success) {
     throw new NotFoundError('Task not found');
   }
-  return id;
+  return parsed.data;
 }
 
 async function assertAdminOrAssignee(req: AuthRequest, assignedTo: string): Promise<void> {
@@ -66,16 +66,16 @@ export async function getTasks(req: AuthRequest, res: Response): Promise<void> {
     throw new ForbiddenError();
   }
 
-  const { status, assignedTo } = req.query;
+  const query = validateQuery(taskQuerySchema, req.query);
 
   const where: { status?: string; assignedTo?: string } = {};
 
-  if (status === 'pending' || status === 'completed') {
-    where.status = status;
+  if (query.status) {
+    where.status = query.status;
   }
 
-  if (typeof assignedTo === 'string') {
-    where.assignedTo = assignedTo;
+  if (query.assignedTo) {
+    where.assignedTo = query.assignedTo;
   }
 
   const tasks = await prisma.task.findMany({

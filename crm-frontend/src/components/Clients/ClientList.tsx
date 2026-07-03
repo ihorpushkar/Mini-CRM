@@ -80,43 +80,82 @@ export default function ClientList() {
           onAction={() => { setEditingClient(undefined); setIsModalOpen(true) }}
         />
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Phone</th>
-                <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {clients.map((client) => (
-                <tr key={client.id}>
-                  <td className="px-4 py-3 text-sm text-gray-900">{client.name}</td>
-                  <td className="px-4 py-3 text-sm text-gray-900">{client.email}</td>
-                  <td className="px-4 py-3 text-sm text-gray-900">{client.phone || '—'}</td>
-                  <td className="px-4 py-3 text-right text-sm space-x-2">
-                    <button
-                      onClick={() => { setEditingClient(client); setIsModalOpen(true) }}
-                      className="text-blue-600 hover:text-blue-900"
-                      disabled={deletingId === client.id}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(client.id)}
-                      className="text-red-600 hover:text-red-900 disabled:opacity-50"
-                      disabled={deletingId === client.id}
-                    >
-                      {deletingId === client.id ? 'Deleting...' : 'Delete'}
-                    </button>
-                  </td>
+        <>
+          <div className="hidden md:block overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Phone</th>
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {clients.map((client) => (
+                  <tr key={client.id}>
+                    <td className="px-4 py-3 text-sm text-gray-900">{client.name}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{client.email}</td>
+                    <td className="px-4 py-3 text-sm text-gray-900">{client.phone || '—'}</td>
+                    <td className="px-4 py-3 text-right text-sm space-x-2">
+                      <button
+                        onClick={() => { setEditingClient(client); setIsModalOpen(true) }}
+                        className="text-blue-600 hover:text-blue-900"
+                        disabled={deletingId === client.id}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(client.id)}
+                        className="text-red-600 hover:text-red-900 disabled:opacity-50"
+                        disabled={deletingId === client.id}
+                      >
+                        {deletingId === client.id ? 'Deleting...' : 'Delete'}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="flex md:hidden flex-col gap-4">
+            {clients.map((client) => (
+              <div key={client.id} className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm">
+                <div className="space-y-2 text-sm">
+                  <div>
+                    <span className="text-gray-500 text-xs uppercase">Name</span>
+                    <p className="text-gray-900 font-medium">{client.name}</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-500 text-xs uppercase">Email</span>
+                    <p className="text-gray-900 break-all">{client.email}</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-500 text-xs uppercase">Phone</span>
+                    <p className="text-gray-900">{client.phone || '—'}</p>
+                  </div>
+                </div>
+                <div className="mt-4 pt-3 border-t border-gray-100 flex gap-3">
+                  <button
+                    onClick={() => { setEditingClient(client); setIsModalOpen(true) }}
+                    className="text-blue-600 hover:text-blue-900 text-sm"
+                    disabled={deletingId === client.id}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(client.id)}
+                    className="text-red-600 hover:text-red-900 text-sm disabled:opacity-50"
+                    disabled={deletingId === client.id}
+                  >
+                    {deletingId === client.id ? 'Deleting...' : 'Delete'}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
       <Modal
         isOpen={isModalOpen}
