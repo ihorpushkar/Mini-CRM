@@ -201,11 +201,6 @@ Auth routes are rate-limited: 5 requests per 15 minutes.
 | PUT    | /tasks/:id   | Yes  | Update (admin, assignee, or unassigned task)               |
 | DELETE | /tasks/:id   | Yes  | Delete (admin, assignee, or unassigned task)               |
 
-### Health
-| Method | Route    | Description  |
-|--------|----------|--------------|
-| GET    | /health  | Health check |
-
 ## Example API Calls
 
 ```bash
