@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { authMiddleware } from '../middleware/auth';
+import { asyncHandler } from '../middleware/errorHandler';
 import {
   createClient,
   getClients,
@@ -10,10 +11,12 @@ import {
 
 const router = Router();
 
-router.post('/', authMiddleware, createClient);
-router.get('/', authMiddleware, getClients);
-router.get('/:id', getClient);
-router.put('/:id', authMiddleware, updateClient);
-router.delete('/:id', authMiddleware, deleteClient);
+router.use(authMiddleware);
+
+router.post('/', asyncHandler(createClient));
+router.get('/', asyncHandler(getClients));
+router.get('/:id', asyncHandler(getClient));
+router.put('/:id', asyncHandler(updateClient));
+router.delete('/:id', asyncHandler(deleteClient));
 
 export default router;

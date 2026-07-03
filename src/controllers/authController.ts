@@ -3,7 +3,7 @@ import { z } from 'zod';
 import prisma from '../config/database';
 import { generateToken } from '../utils/jwt';
 import { hashPassword, comparePassword } from '../utils/password';
-import { AuthRequest, ConflictError, UserNotFoundError, UnauthorizedError, ValidationError } from '../types';
+import { AuthRequest, ConflictError, UserNotFoundError, UnauthorizedError, ValidationError, userSelect } from '../types';
 
 const registerSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -34,15 +34,14 @@ export async function register(req: AuthRequest, res: Response): Promise<void> {
 
   const user = await prisma.user.create({
     data: { email, password: hashedPassword },
-    select: { id: true, email: true, role: true },
+    select: userSelect,
   });
 
   const token = generateToken(user.id);
 
   res.status(201).json({
     success: true,
-    message: 'User registered successfully',
-    data: { token },
+    data: { user, token },
   });
 }
 
@@ -55,24 +54,31 @@ export async function login(req: AuthRequest, res: Response): Promise<void> {
 
   const { email, password } = parsed.data;
 
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true, password: true },
+  });
 
   if (!user) {
-    throw new UserNotFoundError();
+    throw new UnauthorizedError('Invalid credentials');
   }
 
   const isPasswordValid = await comparePassword(password, user.password);
 
   if (!isPasswordValid) {
-    throw new UnauthorizedError('Wrong password');
+    throw new UnauthorizedError('Invalid credentials');
   }
 
   const token = generateToken(user.id);
 
+  const safeUser = await prisma.user.findUnique({
+    where: { id: user.id },
+    select: userSelect,
+  });
+
   res.json({
     success: true,
-    message: 'Login successful',
-    data: { token },
+    data: { user: safeUser, token },
   });
 }
 
@@ -83,7 +89,7 @@ export async function getProfile(req: AuthRequest, res: Response): Promise<void>
 
   const user = await prisma.user.findUnique({
     where: { id: req.userId },
-    select: { id: true, email: true, role: true },
+    select: userSelect,
   });
 
   if (!user) {

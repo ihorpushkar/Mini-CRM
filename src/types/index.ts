@@ -12,11 +12,14 @@ export {
 
 export type UserRole = 'admin' | 'user';
 
-export interface User {
+export interface SafeUser {
   id: string;
   email: string;
-  password: string;
   role: UserRole;
+}
+
+export interface User extends SafeUser {
+  password: string;
 }
 
 export interface AuthRequest extends Request {

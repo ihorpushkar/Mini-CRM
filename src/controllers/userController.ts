@@ -111,7 +111,7 @@ export async function updateUser(req: AuthRequest, res: Response): Promise<void>
     select: userSelect,
   });
 
-  res.json({ success: true, message: 'User updated successfully', data: { user } });
+  res.json({ success: true, data: { user } });
 }
 
 export async function deleteUser(req: AuthRequest, res: Response): Promise<void> {

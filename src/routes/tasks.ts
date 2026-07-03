@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { authMiddleware } from '../middleware/auth';
+import { asyncHandler } from '../middleware/errorHandler';
 import {
   createTask,
   getTasks,
@@ -9,9 +10,11 @@ import {
 
 const router = Router();
 
-router.post('/', authMiddleware, createTask);
-router.get('/', authMiddleware, getTasks);
-router.put('/:id', authMiddleware, updateTask);
-router.delete('/:id', authMiddleware, deleteTask);
+router.use(authMiddleware);
+
+router.post('/', asyncHandler(createTask));
+router.get('/', asyncHandler(getTasks));
+router.put('/:id', asyncHandler(updateTask));
+router.delete('/:id', asyncHandler(deleteTask));
 
 export default router;

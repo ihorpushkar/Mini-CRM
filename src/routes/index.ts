@@ -16,7 +16,7 @@ router.use('/clients', clientRoutes);
 router.use('/tasks', taskRoutes);
 
 router.use((_req, res) => {
-  res.status(404).json({ success: false, message: 'Route not found' });
+  res.status(404).json({ success: false, error: 'Route not found', message: 'Route not found' });
 });
 
 export default router;

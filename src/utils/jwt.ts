@@ -5,11 +5,14 @@ function getSecret(): string {
   if (!secret) {
     throw new Error('JWT_SECRET is not defined');
   }
+  if (secret.length < 32) {
+    throw new Error('JWT_SECRET must be at least 32 characters');
+  }
   return secret;
 }
 
 export function generateToken(userId: string): string {
-  const expiresIn = process.env.JWT_EXPIRES_IN ?? '7d';
+  const expiresIn = process.env.JWT_EXPIRES_IN ?? '24h';
   return jwt.sign({ userId }, getSecret(), { expiresIn } as jwt.SignOptions);
 }
 

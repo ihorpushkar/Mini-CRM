@@ -4,6 +4,8 @@ node_modules/
 dist/
 .DS_Store
 *.log
+*.db
+*.db-journal
 prisma/dev.db
 prisma/dev.db-journal
 crm-frontend/dist/

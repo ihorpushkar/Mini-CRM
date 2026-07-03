@@ -3,127 +3,53 @@ import { hashPassword } from '../src/utils/password';
 
 const prisma = new PrismaClient();
 
-async function main() {
-  console.log('Starting database seed...');
+const userSelect = { id: true, email: true, role: true } as const;
 
-  // Clean existing data
+async function main() {
   await prisma.task.deleteMany();
   await prisma.client.deleteMany();
   await prisma.user.deleteMany();
 
-  // Create users
-  const adminPassword = await hashPassword('admin123');
-  const userPassword = await hashPassword('user123');
-
   const admin = await prisma.user.create({
     data: {
       email: 'admin@test.com',
-      password: adminPassword,
+      password: await hashPassword('admin123'),
       role: 'admin',
     },
+    select: userSelect,
   });
 
-  const regularUser = await prisma.user.create({
+  const user = await prisma.user.create({
     data: {
       email: 'user@test.com',
-      password: userPassword,
+      password: await hashPassword('user123'),
       role: 'user',
     },
+    select: userSelect,
   });
 
-  console.log('Created users:', { admin: admin.email, user: regularUser.email });
-
-  // Create clients
   const client1 = await prisma.client.create({
     data: {
-      name: 'Acme Corporation',
+      name: 'Acme Corp',
       email: 'contact@acme.com',
-      phone: '+1-555-0100',
+      phone: '+1234567890',
       createdBy: admin.id,
     },
   });
 
-  const client2 = await prisma.client.create({
+  await prisma.task.create({
     data: {
-      name: 'Tech Solutions Inc',
-      email: 'info@techsolutions.com',
-      phone: '+1-555-0200',
-      createdBy: regularUser.id,
-    },
-  });
-
-  const client3 = await prisma.client.create({
-    data: {
-      name: 'Global Services Ltd',
-      email: 'hello@globalservices.com',
-      phone: '+1-555-0300',
-      createdBy: admin.id,
-    },
-  });
-
-  console.log('Created clients:', [client1.name, client2.name, client3.name]);
-
-  // Create tasks
-  const task1 = await prisma.task.create({
-    data: {
-      title: 'Initial consultation meeting',
-      description: 'Schedule and conduct initial consultation with client',
-      status: 'completed',
-      clientId: client1.id,
-      assignedTo: admin.id,
-    },
-  });
-
-  const task2 = await prisma.task.create({
-    data: {
-      title: 'Prepare project proposal',
-      description: 'Draft and send project proposal to client',
+      title: 'Setup meeting',
+      description: 'Initial call with client',
       status: 'pending',
       clientId: client1.id,
-      assignedTo: regularUser.id,
+      assignedTo: user.id,
     },
   });
 
-  const task3 = await prisma.task.create({
-    data: {
-      title: 'Follow up on contract',
-      description: 'Contact client regarding contract signing',
-      status: 'pending',
-      clientId: client2.id,
-      assignedTo: admin.id,
-    },
-  });
-
-  const task4 = await prisma.task.create({
-    data: {
-      title: 'Technical assessment',
-      description: 'Perform technical assessment of client requirements',
-      status: 'completed',
-      clientId: client2.id,
-      assignedTo: regularUser.id,
-    },
-  });
-
-  const task5 = await prisma.task.create({
-    data: {
-      title: 'Quarterly review',
-      description: 'Schedule quarterly business review',
-      status: 'pending',
-      clientId: client3.id,
-      assignedTo: admin.id,
-    },
-  });
-
-  console.log('Created tasks:', [task1.title, task2.title, task3.title, task4.title, task5.title]);
-
-  console.log('Database seed completed successfully!');
+  console.log('Seed data created');
 }
 
 main()
-  .catch((e) => {
-    console.error('Error seeding database:', e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+  .catch((e) => console.error(e))
+  .finally(async () => await prisma.$disconnect());

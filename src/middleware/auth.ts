@@ -10,7 +10,7 @@ export function authMiddleware(
   const authHeader = req.headers.authorization;
 
   if (!authHeader?.startsWith('Bearer ')) {
-    res.status(401).json({ success: false, message: 'Access token required' });
+    res.status(401).json({ success: false, error: 'Access token required', message: 'Access token required' });
     return;
   }
 
@@ -21,6 +21,6 @@ export function authMiddleware(
     req.userId = userId;
     next();
   } catch {
-    res.status(401).json({ success: false, message: 'Invalid or expired token' });
+    res.status(401).json({ success: false, error: 'Invalid or expired token', message: 'Invalid or expired token' });
   }
 }
