@@ -128,6 +128,19 @@ export async function deleteUser(req: AuthRequest, res: Response): Promise<void>
     throw new UserNotFoundError();
   }
 
+  if (existingUser.role === 'admin') {
+    throw new ForbiddenError('Cannot delete admin');
+  }
+
+  const [clientsCount, tasksCount] = await Promise.all([
+    prisma.client.count({ where: { createdBy: id } }),
+    prisma.task.count({ where: { assignedTo: id } }),
+  ]);
+
+  if (clientsCount > 0 || tasksCount > 0) {
+    throw new ValidationError('User has active clients/tasks');
+  }
+
   await prisma.user.delete({ where: { id } });
 
   res.json({ success: true, message: 'User deleted successfully' });

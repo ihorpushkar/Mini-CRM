@@ -104,13 +104,22 @@ export default function UserList() {
                     >
                       Edit
                     </button>
-                    <button
-                      onClick={() => handleDelete(user.id)}
-                      className="text-red-600 hover:text-red-900 disabled:opacity-50"
-                      disabled={deletingId === user.id}
-                    >
-                      {deletingId === user.id ? 'Deleting...' : 'Delete'}
-                    </button>
+                    {user.role !== 'admin' ? (
+                      <button
+                        onClick={() => handleDelete(user.id)}
+                        className="text-red-600 hover:text-red-900 disabled:opacity-50"
+                        disabled={deletingId === user.id}
+                      >
+                        {deletingId === user.id ? 'Deleting...' : 'Delete'}
+                      </button>
+                    ) : (
+                      <span
+                        title="Admin cannot be deleted"
+                        className="text-gray-400 cursor-not-allowed"
+                      >
+                        Delete
+                      </span>
+                    )}
                   </td>
                 </tr>
               ))}
