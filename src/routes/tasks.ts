@@ -10,11 +10,9 @@ import {
 
 const router = Router();
 
-router.use(authMiddleware);
-
-router.post('/', asyncHandler(createTask));
-router.get('/', asyncHandler(getTasks));
-router.put('/:id', asyncHandler(updateTask));
-router.delete('/:id', asyncHandler(deleteTask));
+router.post('/', authMiddleware, asyncHandler(createTask));
+router.get('/', authMiddleware, asyncHandler(getTasks));
+router.put('/:id', authMiddleware, asyncHandler(updateTask));
+router.delete('/:id', authMiddleware, asyncHandler(deleteTask));
 
 export default router;

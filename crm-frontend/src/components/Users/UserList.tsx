@@ -6,7 +6,7 @@ import { showError, showSuccess } from '../../utils/toast'
 import Skeleton from '../Skeleton'
 import EmptyState from '../EmptyState'
 import Modal from '../Modal'
-import UserForm from './UserForm'
+import UserEditForm from './UserEditForm'
 
 export default function UserList() {
   const [users, setUsers] = useState<User[]>([])
@@ -123,11 +123,13 @@ export default function UserList() {
         onClose={() => setIsModalOpen(false)}
         title="Edit User"
       >
-        <UserForm
-          user={editingUser}
-          onSuccess={handleFormSuccess}
-          onCancel={() => setIsModalOpen(false)}
-        />
+        {editingUser && (
+          <UserEditForm
+            user={editingUser}
+            onSuccess={handleFormSuccess}
+            onCancel={() => setIsModalOpen(false)}
+          />
+        )}
       </Modal>
     </>
   )

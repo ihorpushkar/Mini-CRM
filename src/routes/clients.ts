@@ -11,12 +11,10 @@ import {
 
 const router = Router();
 
-router.use(authMiddleware);
-
-router.post('/', asyncHandler(createClient));
-router.get('/', asyncHandler(getClients));
-router.get('/:id', asyncHandler(getClient));
-router.put('/:id', asyncHandler(updateClient));
-router.delete('/:id', asyncHandler(deleteClient));
+router.post('/', authMiddleware, asyncHandler(createClient));
+router.get('/', authMiddleware, asyncHandler(getClients));
+router.get('/:id', authMiddleware, asyncHandler(getClient));
+router.put('/:id', authMiddleware, asyncHandler(updateClient));
+router.delete('/:id', authMiddleware, asyncHandler(deleteClient));
 
 export default router;

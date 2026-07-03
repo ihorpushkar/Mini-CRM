@@ -116,6 +116,11 @@ export async function updateUser(req: AuthRequest, res: Response): Promise<void>
 
 export async function deleteUser(req: AuthRequest, res: Response): Promise<void> {
   const id = getParamId(req);
+  const currentUser = await getCurrentUser(req);
+
+  if (currentUser.id !== id && currentUser.role !== 'admin') {
+    throw new ForbiddenError();
+  }
 
   const existingUser = await prisma.user.findUnique({ where: { id } });
 

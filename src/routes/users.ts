@@ -6,11 +6,9 @@ import { asyncHandler } from '../middleware/errorHandler';
 
 const router = Router();
 
-router.use(authMiddleware);
-
-router.get('/', requireRole('admin'), asyncHandler(getUsers));
-router.get('/:id', asyncHandler(getUserById));
-router.put('/:id', asyncHandler(updateUser));
-router.delete('/:id', requireRole('admin'), asyncHandler(deleteUser));
+router.get('/', authMiddleware, requireRole('admin'), asyncHandler(getUsers));
+router.get('/:id', authMiddleware, asyncHandler(getUserById));
+router.put('/:id', authMiddleware, asyncHandler(updateUser));
+router.delete('/:id', authMiddleware, asyncHandler(deleteUser));
 
 export default router;

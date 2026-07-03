@@ -7,6 +7,7 @@ import Skeleton from '../Skeleton'
 import EmptyState from '../EmptyState'
 import Modal from '../Modal'
 import ClientForm from './ClientForm'
+import ClientEditForm from './ClientEditForm'
 
 export default function ClientList() {
   const [clients, setClients] = useState<Client[]>([])
@@ -122,11 +123,18 @@ export default function ClientList() {
         onClose={() => setIsModalOpen(false)}
         title={editingClient ? 'Edit Client' : 'Create Client'}
       >
-        <ClientForm
-          client={editingClient}
-          onSuccess={handleFormSuccess}
-          onCancel={() => setIsModalOpen(false)}
-        />
+        {editingClient ? (
+          <ClientEditForm
+            client={editingClient}
+            onSuccess={handleFormSuccess}
+            onCancel={() => setIsModalOpen(false)}
+          />
+        ) : (
+          <ClientForm
+            onSuccess={handleFormSuccess}
+            onCancel={() => setIsModalOpen(false)}
+          />
+        )}
       </Modal>
     </>
   )

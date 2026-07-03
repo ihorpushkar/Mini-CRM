@@ -117,21 +117,26 @@ export async function deleteClient(req: AuthRequest, res: Response): Promise<voi
 
   const id = getParamId(req);
 
+  const existingClient = await prisma.client.findUnique({
+    where: { id },
+    select: { createdBy: true },
+  });
+
+  if (!existingClient) {
+    throw new NotFoundError('Client not found');
+  }
+
   const user = await prisma.user.findUnique({
     where: { id: req.userId },
     select: { role: true },
   });
 
-  if (!user || user.role !== 'admin') {
+  if (!user) {
     throw new ForbiddenError();
   }
 
-  const client = await prisma.client.findUnique({
-    where: { id },
-  });
-
-  if (!client) {
-    throw new NotFoundError('Client not found');
+  if (existingClient.createdBy !== req.userId && user.role !== 'admin') {
+    throw new ForbiddenError();
   }
 
   await prisma.client.delete({

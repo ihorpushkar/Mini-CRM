@@ -16,20 +16,15 @@ function AppRoutes() {
     <Routes>
       <Route
         path="/login"
-        element={isAuthenticated ? <Navigate to="/" /> : <LoginPage />}
+        element={isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />}
       />
       <Route
         path="/register"
-        element={isAuthenticated ? <Navigate to="/" /> : <RegisterPage />}
+        element={isAuthenticated ? <Navigate to="/" replace /> : <RegisterPage />}
       />
-      <Route
-        path="/"
-        element={
-          <PrivateRoute>
-            <DashboardPage />
-          </PrivateRoute>
-        }
-      />
+      <Route element={<PrivateRoute />}>
+        <Route path="/" element={<DashboardPage />} />
+      </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>
   )

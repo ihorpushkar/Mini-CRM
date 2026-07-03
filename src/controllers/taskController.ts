@@ -11,6 +11,25 @@ function getParamId(req: AuthRequest): string {
   return id;
 }
 
+async function assertAdminOrAssignee(req: AuthRequest, assignedTo: string): Promise<void> {
+  if (!req.userId) {
+    throw new ForbiddenError();
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: req.userId },
+    select: { role: true },
+  });
+
+  if (!user) {
+    throw new ForbiddenError();
+  }
+
+  if (user.role !== 'admin' && req.userId !== assignedTo) {
+    throw new ForbiddenError();
+  }
+}
+
 export async function createTask(req: AuthRequest, res: Response): Promise<void> {
   if (!req.userId) {
     throw new ForbiddenError();
@@ -89,6 +108,8 @@ export async function updateTask(req: AuthRequest, res: Response): Promise<void>
     throw new NotFoundError('Task not found');
   }
 
+  await assertAdminOrAssignee(req, existingTask.assignedTo);
+
   const task = await prisma.task.update({
     where: { id },
     data,
@@ -117,6 +138,8 @@ export async function deleteTask(req: AuthRequest, res: Response): Promise<void>
   if (!task) {
     throw new NotFoundError('Task not found');
   }
+
+  await assertAdminOrAssignee(req, task.assignedTo);
 
   await prisma.task.delete({
     where: { id },

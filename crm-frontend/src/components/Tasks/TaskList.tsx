@@ -7,6 +7,7 @@ import Skeleton from '../Skeleton'
 import EmptyState from '../EmptyState'
 import Modal from '../Modal'
 import TaskForm from './TaskForm'
+import TaskEditForm from './TaskEditForm'
 
 export default function TaskList() {
   const [tasks, setTasks] = useState<Task[]>([])
@@ -131,11 +132,18 @@ export default function TaskList() {
         onClose={() => setIsModalOpen(false)}
         title={editingTask ? 'Edit Task' : 'Create Task'}
       >
-        <TaskForm
-          task={editingTask}
-          onSuccess={handleFormSuccess}
-          onCancel={() => setIsModalOpen(false)}
-        />
+        {editingTask ? (
+          <TaskEditForm
+            task={editingTask}
+            onSuccess={handleFormSuccess}
+            onCancel={() => setIsModalOpen(false)}
+          />
+        ) : (
+          <TaskForm
+            onSuccess={handleFormSuccess}
+            onCancel={() => setIsModalOpen(false)}
+          />
+        )}
       </Modal>
     </>
   )
