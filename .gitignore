@@ -1,0 +1,9 @@
+node_modules/
+.env
+.env.local
+dist/
+.DS_Store
+*.log
+prisma/dev.db
+prisma/dev.db-journal
+crm-frontend/dist/
