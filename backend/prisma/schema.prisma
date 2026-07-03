@@ -36,9 +36,9 @@ model Task {
   description String?
   status     String   @default("pending")
   clientId   String
-  assignedTo String
+  assignedTo String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   client     Client   @relation(fields: [clientId], references: [id])
-  assignee   User     @relation(fields: [assignedTo], references: [id])
+  assignee   User?    @relation(fields: [assignedTo], references: [id])
 }

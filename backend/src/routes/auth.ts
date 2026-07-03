@@ -9,7 +9,7 @@ const router = Router();
 router.post('/register', authRateLimiter, asyncHandler(register));
 router.post('/login', authRateLimiter, asyncHandler(login));
 router.post('/refresh', authRateLimiter, asyncHandler(refreshToken));
-router.get('/profile', authMiddleware, asyncHandler(getProfile));
-router.get('/me', authMiddleware, asyncHandler(getProfile));
+router.get('/profile', asyncHandler(authMiddleware), asyncHandler(getProfile));
+router.get('/me', asyncHandler(authMiddleware), asyncHandler(getProfile));
 
 export default router;

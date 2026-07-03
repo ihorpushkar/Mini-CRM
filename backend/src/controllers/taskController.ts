@@ -11,7 +11,7 @@ function getParamId(req: AuthRequest): string {
   return parsed.data;
 }
 
-async function assertAdminOrAssignee(req: AuthRequest, assignedTo: string): Promise<void> {
+async function assertAdminOrAssignee(req: AuthRequest, assignedTo: string | null): Promise<void> {
   if (!req.userId) {
     throw new ForbiddenError();
   }
@@ -25,9 +25,13 @@ async function assertAdminOrAssignee(req: AuthRequest, assignedTo: string): Prom
     throw new ForbiddenError();
   }
 
-  if (user.role !== 'admin' && req.userId !== assignedTo) {
+  if (user.role !== 'admin' && assignedTo !== null && req.userId !== assignedTo) {
     throw new ForbiddenError();
   }
+}
+
+function canEditTask(role: string, userId: string, assignedTo: string | null): boolean {
+  return role === 'admin' || assignedTo === userId || assignedTo === null;
 }
 
 export async function createTask(req: AuthRequest, res: Response): Promise<void> {
@@ -68,7 +72,20 @@ export async function getTasks(req: AuthRequest, res: Response): Promise<void> {
 
   const query = validateQuery(taskQuerySchema, req.query);
 
-  const where: { status?: string; assignedTo?: string } = {};
+  const currentUser = await prisma.user.findUnique({
+    where: { id: req.userId },
+    select: { role: true },
+  });
+
+  if (!currentUser) {
+    throw new ForbiddenError();
+  }
+
+  const where: {
+    status?: string;
+    assignedTo?: string;
+    OR?: Array<{ assignedTo: string | null }>;
+  } = {};
 
   if (query.status) {
     where.status = query.status;
@@ -76,6 +93,11 @@ export async function getTasks(req: AuthRequest, res: Response): Promise<void> {
 
   if (query.assignedTo) {
     where.assignedTo = query.assignedTo;
+  } else if (currentUser.role !== 'admin') {
+    where.OR = [
+      { assignedTo: req.userId },
+      { assignedTo: null },
+    ];
   }
 
   const tasks = await prisma.task.findMany({
@@ -93,24 +115,43 @@ export async function getTasks(req: AuthRequest, res: Response): Promise<void> {
 }
 
 export async function updateTask(req: AuthRequest, res: Response): Promise<void> {
-  if (!req.userId) {
-    throw new ForbiddenError();
+  const id = getParamId(req);
+  const user = req.user;
+
+  console.log('updateTask - user:', user);
+  console.log('updateTask - id:', id);
+
+  if (!user) {
+    res.status(401).json({ success: false, error: 'Unauthorized' });
+    return;
   }
 
-  const id = getParamId(req);
   const data = validateBody<TaskUpdateInput>(taskUpdateSchema, req.body);
 
-  const existingTask = await prisma.task.findUnique({
-    where: { id },
-  });
+  const task = await prisma.task.findUnique({ where: { id } });
+  console.log('updateTask - task:', task);
 
-  if (!existingTask) {
+  if (!task) {
     throw new NotFoundError('Task not found');
   }
 
-  await assertAdminOrAssignee(req, existingTask.assignedTo);
+  const canEdit =
+    user.role === 'admin' ||
+    task.assignedTo === user.userId ||
+    task.assignedTo === null;
 
-  const task = await prisma.task.update({
+  console.log('canEdit:', canEdit);
+
+  if (!canEdit) {
+    res.status(403).json({
+      success: false,
+      error: 'Forbidden',
+      debug: { role: user.role, assignedTo: task.assignedTo, userId: user.userId },
+    });
+    return;
+  }
+
+  const updated = await prisma.task.update({
     where: { id },
     data,
     include: {
@@ -121,7 +162,7 @@ export async function updateTask(req: AuthRequest, res: Response): Promise<void>
     },
   });
 
-  res.json({ success: true, data: task });
+  res.json({ success: true, data: updated });
 }
 
 export async function deleteTask(req: AuthRequest, res: Response): Promise<void> {

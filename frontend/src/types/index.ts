@@ -20,7 +20,7 @@ export type Task = {
   description?: string
   status: 'pending' | 'completed'
   clientId: string
-  assignedTo: string
+  assignedTo: string | null
   createdAt: string
   updatedAt: string
   client?: { id: string; name: string }

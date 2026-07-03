@@ -22,9 +22,15 @@ export interface User extends SafeUser {
   password: string;
 }
 
+export interface AuthUser {
+  userId: string;
+  role: UserRole;
+}
+
 export interface AuthRequest extends Request {
   userId?: string;
   userRole?: UserRole;
+  user?: AuthUser;
 }
 
 export interface ApiResponse<T = unknown> {
